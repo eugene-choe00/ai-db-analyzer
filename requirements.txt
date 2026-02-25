@@ -1,0 +1,5 @@
+typer
+rich
+sqlalchemy
+openai
+python-dotenv
