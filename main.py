@@ -24,7 +24,6 @@ def setup_db():
         database.create_test_data(engine)
     console.print("[bold green]준비 완료! 'my_test.db' 파일이 생성되었습니다.[/bold green]")
 
-
 @app.command()
 def ask(question: str):
     """AI에게 궁금한 점을 물어보는 명령어"""

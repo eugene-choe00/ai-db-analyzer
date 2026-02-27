@@ -4,4 +4,3 @@ sqlalchemy
 openai
 python-dotenv
 google-genai
-python-dotenv

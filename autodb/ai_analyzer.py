@@ -4,19 +4,23 @@ from google import genai  # 'genai' 대신 'google'에서 'genai'를 가져옵�
 from dotenv import load_dotenv
 
 load_dotenv()
-api_key = os.getenv("GEMINI_API_KEY")
+API_KEY = os.getenv("GEMINI_API_KEY")
+GEMINI_MODEL = "models/gemini-2.5-flash"
+#gemini-3-flash
+#gemini-2.5-flash
+#gemini-1.5-flash
 
-# 새로운 Client 객체를 생성합니다.
-client = genai(api_key=api_key)
+# 새로운 Client 객체를 생성합니다.(genai 도구 상자 안에 있는 Client 기술자를 호출!)
+client = genai.Client(api_key=API_KEY)
 
 def ask_gemini(prompt: str):
     """구글 최신 SDK 표준 방식"""
     try:
-        # 모델명은 'gemini-1.5-flash' 그대로 사용합니다.
+        # 모델명을 위에서 정의한 GEMINI_MODEL로 사용합니다.
         response = client.models.generate_content(
-            model="gemini-1.5-flash",
+            model=GEMINI_MODEL,
             contents=prompt
         )
         return response.text
     except Exception as e:
-        return f"AI 연결 오류가 발생했습니다: {str(e)}"
+        return f"AI 연결 오류가 발생했습니다: {str(e)}"   
