@@ -3,6 +3,7 @@ import typer
 from rich.console import Console
 from autodb import database  # 우리가 만든 database.py를 가져옵니다.
 from autodb import ai_analyzer
+from autodb.database import get_engine, get_all_users
 
 app = typer.Typer()
 console = Console()
@@ -31,6 +32,35 @@ def ask(question: str):
     with console.status("[bold yellow]Gemini가 생각 중..."):
         answer = ai_analyzer.ask_gemini(question)
     console.print(f"\n[bold magenta]AI 답변:[/bold magenta]\n{answer}")
+
+@app.command()
+def analyze():
+    """DB에 있는 사용자 목록을 읽어와서 AI에게 분석을 요청합니다."""
+    engine = get_engine()
+    
+    with console.status("[bold yellow]DB에서 데이터를 읽고 분석하는 중..."):
+        # 1. DB에서 모든 사용자 정보 가져오기
+        users = get_all_users(engine)
+        
+        if not users:
+            console.print("[bold red]분석할 데이터가 DB에 없습니다. 먼저 'setup-db'를 실행하세요.[/bold red]")
+            return
+
+        # 2. AI가 이해하기 쉽게 텍스트로 변환 (프롬프트 구성)
+        user_list_str = "\n".join([f"- 이름: {u.name}, 역할: {u.role}" for u in users])
+        prompt = f"""
+        다음은 우리 데이터베이스에 등록된 사용자들의 목록이야:
+        {user_list_str}
+        
+        이 데이터를 보고 우리 팀의 구성 특징을 분석해서 보고서 형태로 짧게 요약해줘.
+        """
+
+        # 3. AI에게 질문 던지기
+        analysis_result = ai_analyzer.ask_gemini(prompt)
+
+    console.print("\n[bold green]📊 AI의 데이터 분석 보고서:[/bold green]")
+    console.print(f"------------------------------------------\n{analysis_result}")
+
 
 if __name__ == "__main__":
     app()

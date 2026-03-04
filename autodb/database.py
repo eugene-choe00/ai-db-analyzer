@@ -1,4 +1,17 @@
 from sqlalchemy import create_engine, text
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy import Column, Integer, String  # 핵심 도구들을 가져옵니다!
+from sqlalchemy.ext.declarative import declarative_base
+
+# 1. SQLAlchemy의 기본 베이스 클래스 생성
+Base = declarative_base()
+
+# 2. User 클래스 정의 (테이블 설계도)
+class User(Base):
+    __tablename__ = "users"
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String)
+    role = Column(String)
 
 # 1. DB 연결 엔진 만들기 (DB 주소를 받아서 연결 통로를 준비함)
 def get_engine(db_url: str = "sqlite:///./my_test.db"):
@@ -29,3 +42,10 @@ def create_test_data(engine):
         # 데이터 변경을 확정 짓습니다. (매우 중요!)
         conn.commit()
     print("✅ 테스트 DB와 데이터가 생성되었습니다.")
+
+
+def get_all_users(engine):
+    """DB의 모든 사용자 데이터를 가져오는 함수"""
+    Session = sessionmaker(bind=engine)
+    session = Session()
+    return session.query(User).all()
